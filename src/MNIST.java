@@ -4,7 +4,7 @@ import java.util.zip.GZIPInputStream;
 
 public class MNIST {
 
-    public static final int NUM_TEST = 1_000;   // can be up to 10k
+    public static final int NUM_TEST = 100;   // can be up to 10k
     public static final int NUM_TRAIN = 60_000; // can be up to 60k
 
     public static final int K = 3;
@@ -45,13 +45,16 @@ public class MNIST {
          */
         @Override
         public int compareTo(ImageLabel imageLabel) {
-            /* TODO */
-            return 0;
+            if(this.priority > imageLabel.priority)
+                return 1;
+            else if(this.priority < imageLabel.priority)
+                return -1;
+            else return 0;
         }
     }
 
     /**
-     * TODO: Implement totalDist
+     *
      * Calculate Euclidean distance between two vectors (1-D arrays)
      * @param img1 the first array
      * @param img2 the second array
@@ -59,12 +62,15 @@ public class MNIST {
      * @return the Euclidean distance between img1 and img2
      */
     public static float totalDist(float[] img1, float[] img2) throws IllegalArgumentException {
-        /* TODO */
-        return 0;
+        if(img1.length != img2.length)
+            throw new IllegalArgumentException();
+        int distanceSquared = 0;
+        for(int i = 0; i < img1.length; i++)
+            distanceSquared += Math.pow(img1[i] - img2[i], 2);
+        return (float) Math.pow(distanceSquared, 0.5);
     }
 
     /**
-     * TODO: Implement predict
      * Makes a prediction using the K-NN Classifier
      * You may assume k < n (amount of training data)
      *
@@ -76,8 +82,28 @@ public class MNIST {
         //initialize min priority queue using euclidean distance for priority
         MyPriorityQueue<ImageLabel> pq = new MyPriorityQueue<>(NUM_TRAIN);
 
-        /* TODO */
-        return -1;
+        //Find (and store) the Euclidean distance between the current test image and every image in the training set.
+        for(int i = 0; i < TRAIN_IMAGES.length; i++){
+            ImageLabel label = new ImageLabel(TRAIN_LABELS[i], totalDist(image, TRAIN_IMAGES[i]));
+            pq.offer(label);
+        }
+        //Select k images from the train set that have the shortest distances to the current test image.
+        ImageLabel[] closestImages = new ImageLabel[k];
+        for(int i = 0; i < k; i++){
+            closestImages[i] = pq.poll();
+        }
+        //Among the k neighbors, count the number of occurrences of each label.
+        int[] numOfEachLabel = new int[NUM_CLASSES];
+        for(ImageLabel i : closestImages)
+            numOfEachLabel[i.label]++;
+
+        //Select the most common label - this is the model’s prediction.
+        int lowest = 0;
+        for(int i = 0; i < NUM_CLASSES; i++){
+            if(numOfEachLabel[i] > numOfEachLabel[lowest])
+                lowest = i;
+        }
+        return lowest;
     }
 
     /**
