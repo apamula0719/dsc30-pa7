@@ -66,8 +66,8 @@ public class MNIST {
             throw new IllegalArgumentException();
         int distanceSquared = 0;
         for(int i = 0; i < img1.length; i++)
-            distanceSquared += Math.pow(img1[i] - img2[i], 2);
-        return (float) Math.pow(distanceSquared, 0.5);
+            distanceSquared += (img1[i] - img2[i])*(img1[i] - img2[i]);
+        return (float) Math.sqrt(distanceSquared);
     }
 
     /**
@@ -83,7 +83,7 @@ public class MNIST {
         MyPriorityQueue<ImageLabel> pq = new MyPriorityQueue<>(NUM_TRAIN);
 
         //Find (and store) the Euclidean distance between the current test image and every image in the training set.
-        for(int i = 0; i < TRAIN_IMAGES.length; i++){
+        for(int i = 0; i < NUM_TRAIN; i++){
             ImageLabel label = new ImageLabel(TRAIN_LABELS[i], totalDist(image, TRAIN_IMAGES[i]));
             pq.offer(label);
         }
@@ -94,16 +94,17 @@ public class MNIST {
         }
         //Among the k neighbors, count the number of occurrences of each label.
         int[] numOfEachLabel = new int[NUM_CLASSES];
-        for(ImageLabel i : closestImages)
+        for(ImageLabel i : closestImages){
             numOfEachLabel[i.label]++;
+        }
 
         //Select the most common label - this is the model’s prediction.
-        int lowest = 0;
-        for(int i = 0; i < NUM_CLASSES; i++){
-            if(numOfEachLabel[i] > numOfEachLabel[lowest])
-                lowest = i;
+        int highest_label = 0;
+        for(int i = 0; i < numOfEachLabel.length; i++){
+            if(numOfEachLabel[i] > numOfEachLabel[highest_label])
+                highest_label = i;
         }
-        return lowest;
+        return highest_label;
     }
 
     /**

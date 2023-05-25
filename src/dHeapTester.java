@@ -51,4 +51,11 @@ class dHeapTester {
         heap.clear();
         assertEquals(heap.size(), 0);
     }
+    @Test
+    void docTests(){
+        heap = new dHeap<>(1, 3, true);
+        for(int i = 0; i < 30; i++)
+            heap.add(i);
+
+    }
 }

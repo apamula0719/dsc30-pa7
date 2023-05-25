@@ -149,6 +149,8 @@ public class dHeap<T extends Comparable<? super T>> implements HeapInterface<T> 
         return desiredIndex;
     }
     private void bubbleUp(int index) {
+        if(index == 0)
+            return;
         int compare = heap[index].compareTo(heap[parent(index)]);
         if(compare > 0){//When this value is greater than its parent
             if(isMaxHeap){
