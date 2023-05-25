@@ -62,9 +62,10 @@ public class MNIST {
      * @return the Euclidean distance between img1 and img2
      */
     public static float totalDist(float[] img1, float[] img2) throws IllegalArgumentException {
+
         if(img1.length != img2.length)
             throw new IllegalArgumentException();
-        int distanceSquared = 0;
+        float distanceSquared = 0;
         for(int i = 0; i < img1.length; i++)
             distanceSquared += (img1[i] - img2[i])*(img1[i] - img2[i]);
         return (float) Math.sqrt(distanceSquared);
@@ -81,7 +82,6 @@ public class MNIST {
     public static int predict(float[] image, int k) {
         //initialize min priority queue using euclidean distance for priority
         MyPriorityQueue<ImageLabel> pq = new MyPriorityQueue<>(NUM_TRAIN);
-
         //Find (and store) the Euclidean distance between the current test image and every image in the training set.
         for(int i = 0; i < NUM_TRAIN; i++){
             ImageLabel label = new ImageLabel(TRAIN_LABELS[i], totalDist(image, TRAIN_IMAGES[i]));
